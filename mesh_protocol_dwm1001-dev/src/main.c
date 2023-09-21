@@ -443,6 +443,9 @@ int main(void) {
   #if EVAL
               uint8_t slotNum = TimeKeeping_CalculateCurrentSlotNum(&node);
               printf("RX DIST %d %f %d %d 0 \n", msg->senderId, distance, (int) (currentTime - timediffToNow), (int) slotNum);
+
+              uint32 part_id = dwt_getpartid(); 
+              printf("id: %x \n", part_id);
   #endif
             };
 
