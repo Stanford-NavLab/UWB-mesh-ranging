@@ -60,8 +60,8 @@ typedef struct NeighborhoodStruct * Neighborhood;
 * oneHopNeighborsJoinedTime: time the neighbor joined the neighborhood
 */
 typedef struct NeighborhoodStruct {
-  int8_t numOneHopNeighbors;
-  int8_t oneHopNeighbors[MAX_NUM_NODES - 1];
+  uint8_t numOneHopNeighbors;
+  uint8_t oneHopNeighbors[MAX_NUM_NODES - 1];
   int64_t oneHopNeighborsLastSeen[MAX_NUM_NODES - 1];
   int64_t oneHopNeighborsLastRanging[MAX_NUM_NODES - 1];
   int64_t oneHopNeighborsJoinedTime[MAX_NUM_NODES - 1];
@@ -75,7 +75,7 @@ Neighborhood Neighborhood_Create();
 * @param node is the Node struct of this node
 * @param id is the ID of the neighbor that should be added 
 */
-void Neighborhood_AddOrUpdateOneHopNeighbor(Node node, int8_t id);
+void Neighborhood_AddOrUpdateOneHopNeighbor(Node node, uint8_t id);
 
 /** Get the IDs of the current one hop neighbors of the node
 * @param node is the Node struct of this node
@@ -83,7 +83,7 @@ void Neighborhood_AddOrUpdateOneHopNeighbor(Node node, int8_t id);
 * @param size is the size of the buffer (used to avoid illegal memory access)
 * return number of neighbors; return -1 if buffer is too small
 */
-int8_t Neighborhood_GetOneHopNeighbors(Node node, int8_t *buffer, int8_t size);
+int8_t Neighborhood_GetOneHopNeighbors(Node node, uint8_t *buffer, uint8_t size);
 
 /** Remove all neighbors that are considered gone
 * @param node is the Node struct of this node
@@ -98,7 +98,7 @@ void Neighborhood_RemoveAbsentNeighbors(Node node);
 *
 * This function gets the current time from the clock to set the property.
 */
-void Neighborhood_UpdateRanging(Node node, int8_t id, int64_t updateTime, double distance);
+void Neighborhood_UpdateRanging(Node node, uint8_t id, int64_t updateTime, double distance);
 
 /** Get the neighbor that should be done ranging with next time
 * @param node is the Node struct of this node

@@ -38,11 +38,11 @@
 
 #include "../include/Util.h"
 
-static int compare( const void* a, const void* b);
+static uint8_t compare( const void* a, const void* b);
 
-int16_t Util_Int8tArrayFindElement(int8_t *array, int8_t element, int16_t arraySize) {
+int16_t Util_Int8tArrayFindElement(uint8_t *array, uint8_t element, int16_t arraySize) {
   // compare each array element with the element that should be found
-  for (int i = 0; i < arraySize; ++i) {
+  for (uint8_t i = 0; i < arraySize; ++i) {
     if (array[i] == element) {
       return i;
     };
@@ -50,7 +50,7 @@ int16_t Util_Int8tArrayFindElement(int8_t *array, int8_t element, int16_t arrayS
   return -1;
 };
 
-int16_t Util_IntersectSortedInt8tArrays(int8_t *array1, int8_t size1, int8_t *array2, int8_t size2, int8_t *intersection) {
+int16_t Util_IntersectSortedInt8tArrays(uint8_t *array1, uint8_t size1, uint8_t *array2, uint8_t size2, uint8_t *intersection) {
   int16_t i = 0;
   int16_t j = 0;
   int16_t numCommonElements = 0;
@@ -72,16 +72,16 @@ int16_t Util_IntersectSortedInt8tArrays(int8_t *array1, int8_t size1, int8_t *ar
   return numCommonElements;
 };
 
-void Util_SortInt8tArray(int8_t *array, int8_t arraySize, int8_t *sorted) {
+void Util_SortInt8tArray(uint8_t *array, uint8_t arraySize, uint8_t *sorted) {
   memcpy(array, sorted, arraySize);
-  qsort(sorted, arraySize, sizeof(int8_t), compare);
+  qsort(sorted, arraySize, sizeof(uint8_t), compare);
 };
 
-int16_t Util_Int8tFindIdxOfMinimumInArray(int8_t *array, int16_t arraySize) {
+int16_t Util_Int8tFindIdxOfMinimumInArray(uint8_t *array, int16_t arraySize) {
   int16_t minIdx = 0;
-  int8_t minValue = array[0];
+  uint8_t minValue = array[0];
   // iterate over the array and save the smallest value and its index
-  for (int i = 1; i < arraySize; ++i) {
+  for (uint8_t i = 1; i < arraySize; ++i) {
     if (array[i] < minValue) {
       minValue = array[i];
       minIdx = i;
@@ -94,7 +94,7 @@ int16_t Util_Int64tFindIdxOfMinimumInArray(int64_t *array, int16_t arraySize) {
   int16_t minIdx = 0;
   int64_t minValue = array[0];
   // iterate over the array and save the smallest value and its index
-  for (int i = 1; i < arraySize; ++i) {
+  for (uint8_t i = 1; i < arraySize; ++i) {
     if (array[i] < minValue) {
       minValue = array[i];
       minIdx = i;
@@ -107,7 +107,7 @@ int16_t Util_Int64tFindIdxOfMaximumInArray(int64_t *array, int16_t arraySize) {
   int16_t maxIdx = 0;
   int64_t maxValue = array[0];
   // iterate over the array and save the biggest value and its index
-  for (int i = 1; i < arraySize; ++i) {
+  for (uint8_t i = 1; i < arraySize; ++i) {
     if (array[i] > maxValue) {
       maxValue = array[i];
       maxIdx = i;
@@ -116,10 +116,10 @@ int16_t Util_Int64tFindIdxOfMaximumInArray(int64_t *array, int16_t arraySize) {
   return maxIdx;
 };
 
-static int compare( const void* a, const void* b) {
+static uint8_t compare( const void* a, const void* b) {
    // (c) Alex Reece; https://stackoverflow.com/questions/3893937/sorting-an-array-in-c
-   int8_t int_a = * ( (int8_t*) a );
-   int8_t int_b = * ( (int8_t*) b );
+   uint8_t int_a = * ( (uint8_t*) a );
+   uint8_t int_b = * ( (uint8_t*) b );
 
    if(int_a == int_b){
     return 0;

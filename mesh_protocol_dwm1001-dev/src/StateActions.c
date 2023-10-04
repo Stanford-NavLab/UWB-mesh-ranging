@@ -81,13 +81,13 @@ void StateActions_ListeningConnectedTimeTicAction(Node node) {
   SlotMap_RemoveExpiredSlotsFromThreeHopSlotMap(node);
 
   // release expired pending and own slots
-  int8_t removedPending[NUM_SLOTS];
-  int8_t removedOwn[NUM_SLOTS];
+  uint8_t removedPending[NUM_SLOTS];
+  uint8_t removedOwn[NUM_SLOTS];
   int16_t numRemovedPending = SlotMap_RemoveExpiredPendingSlots(node, &removedPending[0], NUM_SLOTS);
   int16_t numRemovedOwn = SlotMap_RemoveExpiredOwnSlots(node, &removedOwn[0], NUM_SLOTS);
 
   // check if the next schedule is for one of the expired slots and if so, cancel it
-  int8_t nextScheduledSlot = Scheduler_GetSlotOfNextSchedule(node);
+  uint8_t nextScheduledSlot = Scheduler_GetSlotOfNextSchedule(node);
   int16_t indexPending = Util_Int8tArrayFindElement(&removedPending[0], nextScheduledSlot, numRemovedPending);
   if (indexPending != -1) {
     Scheduler_CancelScheduledPing(node);
@@ -152,7 +152,7 @@ void StateActions_SendingUnconnectedTimeTicAction(Node node) {
 };
 
 void StateActions_RangingPollTimeTicAction(Node node) {
-  int8_t* neighbors[MAX_NUM_NODES];
+  uint8_t* neighbors[MAX_NUM_NODES];
   int8_t numNeighbors = Neighborhood_GetOneHopNeighbors(node, &neighbors[0], MAX_NUM_NODES);
   bool sendingFinished = Driver_SendingFinished(node);
 

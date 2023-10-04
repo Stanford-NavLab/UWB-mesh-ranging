@@ -65,8 +65,8 @@ static double tof;
 static double distance;
 
 /*Transactions Counters */
-static volatile int tx_count = 0 ; // Successful transmit counter
-static volatile int rx_count = 0 ; // Successful receive counter 
+static volatile uint8_t tx_count = 0 ; // Successful transmit counter
+static volatile uint8_t rx_count = 0 ; // Successful receive counter 
 
 /** END DECAWAVE RANGING VARIABLES */
 
@@ -109,19 +109,19 @@ void Driver_TransmitPing(Node node, Message msg) {
   // set all to zero first
   memset(buffer, 0, 127);
   // offset is the current index in the buffer 
-  int offset = 0;
+  uint8_t offset = 0;
   //dwt_writetodevice(TX_BUFFER_ID, offset, sizeof(msg->type), *msg->type);
-  int tmp = msg->type;
-  memcpy(&buffer[0], &tmp, sizeof(int));
+  uint8_t tmp = msg->type;
+  memcpy(&buffer[0], &tmp, sizeof(uint8_t));
 
   // write senderId
-  offset += sizeof(int);
-  memcpy(&buffer[offset], &node->id, sizeof(int8_t));
+  offset += sizeof(uint8_t);
+  memcpy(&buffer[offset], &node->id, sizeof(uint8_t));
   // write recipientId
-  offset += sizeof(int8_t);
-  memcpy(&buffer[offset], &msg->recipientId, sizeof(int8_t));
+  offset += sizeof(uint8_t);
+  memcpy(&buffer[offset], &msg->recipientId, sizeof(uint8_t));
   // write networkId
-  offset += sizeof(int8_t);
+  offset += sizeof(uint8_t);
   memcpy(&buffer[offset], &msg->networkId, sizeof(uint8_t));
   // write networkAge
   offset += sizeof(uint8_t);
@@ -131,17 +131,17 @@ void Driver_TransmitPing(Node node, Message msg) {
   memcpy(&buffer[offset], &msg->timeSinceFrameStart, sizeof(int64_t));
   // write oneHopSlotStatus
   offset += sizeof(int64_t);
-  memcpy(&buffer[offset], &msg->oneHopSlotStatus, sizeof(int) * NUM_SLOTS);
+  memcpy(&buffer[offset], &msg->oneHopSlotStatus, sizeof(uint8_t) * NUM_SLOTS);
   // write oneHopSlotIds
-  offset += (sizeof(int) * NUM_SLOTS);
-  memcpy(&buffer[offset], &msg->oneHopSlotIds, sizeof(int8_t) * NUM_SLOTS);
+  offset += (sizeof(uint8_t) * NUM_SLOTS);
+  memcpy(&buffer[offset], &msg->oneHopSlotIds, sizeof(uint8_t) * NUM_SLOTS);
   // write twoHopSlotStatus
-  offset += (sizeof(int8_t) * NUM_SLOTS);
-  memcpy(&buffer[offset], &msg->twoHopSlotStatus, sizeof(int) * NUM_SLOTS);
+  offset += (sizeof(uint8_t) * NUM_SLOTS);
+  memcpy(&buffer[offset], &msg->twoHopSlotStatus, sizeof(uint8_t) * NUM_SLOTS);
   // write twoHopSlotIds
-  offset += (sizeof(int) * NUM_SLOTS);
-  memcpy(&buffer[offset], &msg->twoHopSlotIds, sizeof(int8_t) * NUM_SLOTS);
-  offset += (sizeof(int8_t) * NUM_SLOTS);
+  offset += (sizeof(uint8_t) * NUM_SLOTS);
+  memcpy(&buffer[offset], &msg->twoHopSlotIds, sizeof(uint8_t) * NUM_SLOTS);
+  offset += (sizeof(uint8_t) * NUM_SLOTS);
 
   memcpy(&buffer[offset], &pingsSent, sizeof(int16_t));
   offset += (sizeof(int16_t));
@@ -156,7 +156,7 @@ void Driver_TransmitPing(Node node, Message msg) {
   dwt_writetxfctrl(length, 0, 0);
 
   /** Start transmission */
-  int ret = dwt_starttx(DWT_START_TX_IMMEDIATE);
+  uint8_t ret = dwt_starttx(DWT_START_TX_IMMEDIATE);
 
   if (ret == DWT_ERROR) {
     printf("TRANSMISSION FAILED \n");
@@ -180,11 +180,11 @@ void Driver_TransmitPing(Node node, Message msg) {
   uint8_t slotNum = TimeKeeping_CalculateCurrentSlotNum(node);
 
 #if DEBUG
-  printf("%d: Node %" PRId8 " sent ping %d in slot %" PRIu8 " \n", (int) localTime, node->id, pingsSent, slotNum);
+  printf("%d: Node %" PRId8 " sent ping %d in slot %" PRIu8 " \n", (uint8_t) localTime, node->id, pingsSent, slotNum);
 #endif
 
 #if EVAL
-  printf("TX PING %d 0 %d %d %d \n", (int) node->id, (int) localTime, (int) slotNum, (int) pingsSent);
+  printf("TX PING %x 0 %d %x %d \n", node->id, (uint8_t) localTime,  slotNum, (uint8_t) pingsSent);
 #endif
 
   pingsSent += 1;
@@ -230,7 +230,7 @@ void Driver_TransmitPoll(Node node, Message msg) {
 
   int64_t localTime = ProtocolClock_GetLocalTime(node->clock);
 #if DEBUG_VERBOSE
-  printf("%d: Node %" PRId8 " sent POLL \n", (int) localTime, node->id);
+  printf("%d: Node %" PRId8 " sent POLL \n", (uint8_t) localTime, node->id);
 #endif
 };
 
@@ -241,7 +241,7 @@ void Driver_TransmitResponse(Node node, Message msg) {
   /** See description in Driver_TransmitPing */
 
   uint32 resp_tx_time;
-  int ret;
+  uint8_t ret;
 
   /* Retrieve poll reception timestamp. */
   poll_rx_ts = get_rx_timestamp_u64();
@@ -292,7 +292,7 @@ void Driver_TransmitResponse(Node node, Message msg) {
 
     int64_t localTime = ProtocolClock_GetLocalTime(node->clock);
 #if DEBUG_VERBOSE
-    printf("%d: Node %" PRId8 " sent RESPONSE \n", (int) localTime, node->id);
+    printf("%d: Node %" PRId8 " sent RESPONSE \n", (uint8_t) localTime, node->id);
 #endif
   } else {
   /* If we end up in here then we have not succeded in transmitting the packet we sent up.
@@ -322,7 +322,7 @@ void Driver_TransmitFinal(Node node, Message msg) {
   dwt_forcetrxoff();
 
   uint32 final_tx_time;
-  int ret;
+  uint8_t ret;
 
   /* Retrieve poll transmission and response reception timestamp. */
   poll_tx_ts = get_tx_timestamp_u64();
@@ -370,7 +370,7 @@ void Driver_TransmitFinal(Node node, Message msg) {
   int64_t localTime = ProtocolClock_GetLocalTime(node->clock);
 
 #if DEBUG_VERBOSE
-  printf("%d: Node %" PRId8 " sent FINAL \n", (int) localTime, node->id);
+  printf("%d: Node %" PRId8 " sent FINAL \n", (uint8_t) localTime, node->id);
 #endif
 };
 
@@ -424,7 +424,7 @@ void Driver_TransmitResult(Node node, Message msg) {
   } dist;
   dist.distanceVal = distance;
 
-  for (int i = 0; i < sizeof(float); ++i) {
+  for (uint8_t i = 0; i < sizeof(float); ++i) {
     tx_result_msg[RESULT_MSG_DIST_IDX + i] = dist.bytes[i];
   };
 
@@ -449,7 +449,7 @@ void Driver_TransmitResult(Node node, Message msg) {
 
 #if EVAL
   uint8_t slotNum = TimeKeeping_CalculateCurrentSlotNum(node);
-  printf("TX DIST %d %f %d %d 0 \n", (int) msg->senderId, distance, (int) currentTime, (int) slotNum);
+  printf("TX DIST %x %f %d %x 0 \n", msg->senderId, distance, (uint8_t) currentTime, slotNum);
 #endif
 
   Neighborhood_UpdateRanging(node, msg->senderId, msg->timestamp, distance);
@@ -494,7 +494,7 @@ static uint64 get_tx_timestamp_u64(void)
 {
     uint8 ts_tab[5];
     uint64 ts = 0;
-    int i;
+    uint8_t i;
     dwt_readtxtimestamp(ts_tab);
     for (i = 4; i >= 0; i--)
     {
@@ -518,7 +518,7 @@ static uint64 get_rx_timestamp_u64(void)
 {
     uint8 ts_tab[5];
     uint64 ts = 0;
-    int i;
+    uint8_t i;
     dwt_readrxtimestamp(ts_tab);
     for (i = 4; i >= 0; i--)
     {
@@ -541,7 +541,7 @@ static uint64 get_rx_timestamp_u64(void)
  */
 static void final_msg_set_ts(uint8 *ts_field, uint64 ts)
 {
-    int i;
+    uint8_t i;
     for (i = 0; i < FINAL_MSG_TS_LEN; i++)
     {
         ts_field[i] = (uint8) ts;
@@ -562,7 +562,7 @@ static void final_msg_set_ts(uint8 *ts_field, uint64 ts)
  */
 static void final_msg_get_ts(const uint8 *ts_field, uint32 *ts)
 {
-    int i;
+    uint8_t i;
     *ts = 0;
     for (i = 0; i < FINAL_MSG_TS_LEN; i++)
     {

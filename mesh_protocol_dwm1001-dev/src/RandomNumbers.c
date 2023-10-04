@@ -41,7 +41,7 @@
 
 int64_t RandomNumbers_GetRandomIntBetween(Node node, int64_t lowerBound, int64_t upperBound) {
   // from http://c-faq.com/lib/randrange.html
-  int randomNum = LCG_Rand(node);
+  uint8_t randomNum = LCG_Rand(node);
 
   int64_t randomInt = (int64_t) lowerBound + randomNum / (RAND_MAX_LCG / (upperBound - lowerBound + 1) + 1); 
 

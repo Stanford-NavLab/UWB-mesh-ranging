@@ -59,7 +59,7 @@ typedef struct ConfigStruct {
   int32_t slotLength;
 
   /** number of slots every node should try to reserve */
-  int8_t slotGoal;
+  uint8_t slotGoal;
 
   /** time limit for the initial ping in time tics (the unit that the clock uses)
   * When there is no network, nodes will schedule an initial ping to create one at a random time; 

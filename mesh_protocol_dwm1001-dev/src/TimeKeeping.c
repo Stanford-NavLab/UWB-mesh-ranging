@@ -166,7 +166,7 @@ int64_t TimeKeeping_GetTimeRemainingInCurrentSlot(Node node) {
 void TimeKeeping_CalculateCollisionTimes(Node node, Message msg, int32_t *buffer) {
   // collision times are contained in the message ("time that passed since the collision was 
   // received by the other node", but the time it took to transmit the message has also to be accounted for)
-  for (int i = 0; i < msg->numCollisions; ++i) {
+  for (uint8_t i = 0; i < msg->numCollisions; ++i) {
     if (msg->collisionTimes[i] == -1) {
       buffer = NULL;
     };

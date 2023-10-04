@@ -71,7 +71,7 @@ LCG LCG_Create(uint32_t seed);
 * @param node is the Node struct of the node that should perform this action
 * return random integer between 0 and 32768 
 */
-int LCG_Rand(Node node);
+uint8_t LCG_Rand(Node node);
 
 /** Use a new seed
 * @param node is the Node struct of the node that should perform this action

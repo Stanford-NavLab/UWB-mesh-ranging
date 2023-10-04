@@ -81,18 +81,18 @@ typedef enum MessageSizes MessageSizes;
 */
 typedef struct MessageStruct {
   MessageTypes type;
-  int8_t senderId;
-  int8_t recipientId;
+  uint8_t senderId;
+  uint8_t recipientId;
   int64_t timestamp;                  // timestamp of arrival 
   uint8_t networkId;
   int64_t networkAge;                 // network age at time of sending (not at completion of the message - therefore arrival of preamble is used later)
   int64_t timeSinceFrameStart;
-  int oneHopSlotStatus[NUM_SLOTS];
-  int8_t oneHopSlotIds[NUM_SLOTS];
-  int twoHopSlotStatus[NUM_SLOTS];
-  int8_t twoHopSlotIds[NUM_SLOTS];
+  uint8_t oneHopSlotStatus[NUM_SLOTS];
+  uint8_t oneHopSlotIds[NUM_SLOTS];
+  uint8_t twoHopSlotStatus[NUM_SLOTS];
+  uint8_t twoHopSlotIds[NUM_SLOTS];
   int64_t collisionTimes[MAX_NUM_COLLISIONS_RECORDED];  // used to report collisions to foreign networks (contains time since the collision happened, so it is independent of slot synchronization)
-  int8_t numCollisions;               // number of collision times actually contained in the message
+  uint8_t numCollisions;               // number of collision times actually contained in the message
   double distance;
   int16_t pingNum;
 
@@ -101,8 +101,8 @@ typedef struct MessageStruct {
   uint32_t frame_len;
 
   // used internally to hold two- or three-hop maps:
-  int *multiHopStatus; // this is only a pointer to one of the other arrays, not an array itself
-  int8_t *multiHopIds;
+  uint8_t *multiHopStatus; // this is only a pointer to one of the other arrays, not an array itself
+  uint8_t *multiHopIds;
 } MessageStruct;
 
 /** Constructor

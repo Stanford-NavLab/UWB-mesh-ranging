@@ -87,7 +87,7 @@ bool Scheduler_NothingScheduledYet(Node node) {
   return node->scheduler->timeNextSchedule == -1;
 };
 
-int8_t Scheduler_GetSlotOfNextSchedule(Node node) {
+uint8_t Scheduler_GetSlotOfNextSchedule(Node node) {
   uint64_t timeNextSchedule = Scheduler_GetTimeOfNextSchedule(node);
   return TimeKeeping_CalculateOwnSlotAtTime(node, timeNextSchedule);
 }
@@ -111,7 +111,7 @@ void Scheduler_ScheduleNextPing(Node node) {
       // when node is connected, the time of the next ping depends on whether it is a new reservation
       // or a regular ping in an already reserved slot
 
-      int8_t scheduleSlotNum = 0;
+      int16_t scheduleSlotNum = 0;
       bool goalMet = SlotMap_SlotReservationGoalMet(node);
 
       uint64_t delay = 0;
@@ -137,7 +137,7 @@ void Scheduler_ScheduleNextPing(Node node) {
       };
 
       // schedule to the start of the slot + the random delay
-      scheduleTime = TimeKeeping_CalculateNextStartOfSlot(node, scheduleSlotNum);
+      scheduleTime = TimeKeeping_CalculateNextStartOfSlot(node, (uint8_t) scheduleSlotNum);
       scheduleTime += node->config->guardPeriodLength + delay;
       break;
   };

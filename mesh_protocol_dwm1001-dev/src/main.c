@@ -124,7 +124,7 @@ static void create_timers()
     APP_ERROR_CHECK(err_code);
 }
 
-int main(void) {
+uint8_t main(void) {
 
   lfclk_request();
   app_timer_init();
@@ -133,7 +133,7 @@ int main(void) {
   bool txFinished = true;
   int64_t time = 0;
 
-  int id = NODE_ID;
+  uint8_t id = NODE_ID;
   uint32_t seed = RANDOM_SEED;
 
   /* Create all the structs that hold the data of the node */
@@ -213,6 +213,20 @@ int main(void) {
     while (1) {};
   }
 
+  uint32 part_id = dwt_getpartid(); 
+  printf("id 1: %x \n", part_id);
+  printf("id 2: %d \n", part_id);
+
+  unsigned  mask;
+  mask = (1 << 8) - 1;
+  uint8_t lastXbits = part_id & mask;
+  printf("id 3: %x \n", lastXbits);
+  printf("id 4: %d \n", lastXbits);
+  uint8_t newId = (uint8_t) lastXbits;
+  printf("id 3: %x \n", newId);
+  printf("id 4: %d \n", newId);
+  node.id = newId;
+
   // Read antenna delay from OTP
   uint32_t ant_delay;
   dwt_otpread(0x01c, &ant_delay, 1);
@@ -247,7 +261,7 @@ int main(void) {
   while(1) {
 
     // enable receiver if transmission is finished
-    int8_t state = dwt_read8bitoffsetreg(SYS_STATE_ID, 2);
+    uint8_t state = dwt_read8bitoffsetreg(SYS_STATE_ID, 2);
     bool isIdle = (state == 0x01);
     bool isRx = (state == 0x05);
     bool isRxWait = (state == 0x03);
@@ -317,7 +331,7 @@ int main(void) {
               uint64 timediffToNow = round((sys_time - rx_time)/(1000000/TICS_PER_SECOND));
 
   #if DEBUG_VERBOSE
-              printf("%d: Node %" PRId8 " received POLL in slot %" PRIu8 " \r\n", (int) localTime, node.id, slotNum);
+              printf("%d: Node %" PRId8 " received POLL in slot %" PRIu8 " \r\n", (uint8_t) localTime, node.id, slotNum);
   #endif
               msg->type = POLL;
 
@@ -345,7 +359,7 @@ int main(void) {
               uint64 timediffToNow = round((sys_time - rx_time)/(1000000/TICS_PER_SECOND));
 
   #if DEBUG_VERBOSE
-              printf("%d: Node %" PRId8 " received RESPONSE in slot %" PRIu8 " \r\n", (int) localTime, node.id, slotNum);
+              printf("%d: Node %" PRId8 " received RESPONSE in slot %" PRIu8 " \r\n", (uint8_t) localTime, node.id, slotNum);
   #endif
               msg->type = RESPONSE;
           
@@ -372,7 +386,7 @@ int main(void) {
               uint64 timediffToNow = round((sys_time - rx_time)/(1000000/TICS_PER_SECOND));
 
   #if DEBUG_VERBOSE
-              printf("%d: Node %" PRId8 " received FINAL in slot %" PRIu8 " \r\n", (int) localTime, node.id, slotNum);
+              printf("%d: Node %" PRId8 " received FINAL in slot %" PRIu8 " \r\n", (uint8_t) localTime, node.id, slotNum);
   #endif
               msg->type = FINAL;
           
@@ -400,7 +414,7 @@ int main(void) {
               uint64 timediffToNow = round((sys_time - rx_time)/(1000000/TICS_PER_SECOND));
 
   #if DEBUG_VERBOSE
-              printf("%d: Node %" PRId8 " received RESULT in slot %" PRIu8 " \r\n", (int) localTime, node.id, slotNum);
+              printf("%d: Node %" PRId8 " received RESULT in slot %" PRIu8 " \r\n", (uint8_t) localTime, node.id, slotNum);
   #endif
 
               msg->type = RESULT;
@@ -432,7 +446,7 @@ int main(void) {
   #endif
   #if EVAL
               uint8_t slotNum = TimeKeeping_CalculateCurrentSlotNum(&node);
-              printf("RX DIST %d %f %d %d 0 \n", msg->senderId, distance, (int) (currentTime - timediffToNow), (int) slotNum);
+              printf("RX DIST %x %f %d %x 0 \n", msg->senderId, distance, (uint8_t) (currentTime - timediffToNow), slotNum);
 
               uint32 part_id = dwt_getpartid(); 
               printf("id: %x \n", part_id);
@@ -459,25 +473,25 @@ int main(void) {
           uint64 timediffToNow = round((sys_time - rx_time)/(1000000/TICS_PER_SECOND)); // sys_time and rx_time are in microseconds (1000000 us per s)
 
   #if DEBUG || DEBUG_VERBOSE
-          printf("%d: Node %" PRId8 " received ping message in slot %" PRIu8 " \r\n", (int) localTime, node.id, slotNum);
+          printf("%d: Node %" PRId8 " received ping message in slot %" PRIu8 " \r\n", (uint8_t) localTime, node.id, slotNum);
   #endif
           // it is not a ranging message (i.e. it is a PING)
-          int offset = 0;
+          uint8_t offset = 0;
           // create values out of the byte array by shifting the bits correctly
           int32_t type = (rx_buffer[offset]) + (rx_buffer[offset + 1] << 8) + (rx_buffer[offset + 2] << 16) + (rx_buffer[offset + 3] << 24);
 
           msg->type = PING;
 
-          offset += sizeof(int);
+          offset += sizeof(uint8_t);
           msg->senderId = rx_buffer[offset];
 
-          offset += sizeof(int8_t);
+          offset += sizeof(uint8_t);
           msg->recipientId = rx_buffer[offset];
 
-          offset += sizeof(int8_t);
+          offset += sizeof(uint8_t);
           msg->networkId = rx_buffer[offset];
 
-          offset += sizeof(int8_t);
+          offset += sizeof(uint8_t);
           msg->networkAge = rx_buffer[offset] + (rx_buffer[offset + 1] << 8) + (rx_buffer[offset + 2] << 16) + (rx_buffer[offset + 3] << 24)
             + (rx_buffer[offset + 4] << 32) + (rx_buffer[offset + 5] << 40) + (rx_buffer[offset + 6] << 48) + (rx_buffer[offset + 7] << 56);
 
@@ -486,26 +500,26 @@ int main(void) {
             + (rx_buffer[offset + 4] << 32) + (rx_buffer[offset + 5] << 40) + (rx_buffer[offset + 6] << 48) + (rx_buffer[offset + 7] << 56);
 
           offset += sizeof(int64_t);
-          for(int i = 0; i < NUM_SLOTS; ++i) {
-            msg->oneHopSlotStatus[i] = (rx_buffer[offset + i*sizeof(int)]) + (rx_buffer[offset + i*sizeof(int) + 1] << 8) + (rx_buffer[offset + i*sizeof(int) + 2] << 16) + (rx_buffer[offset + i*sizeof(int) + 3] << 24);
+          for(uint8_t i = 0; i < NUM_SLOTS; ++i) {
+            msg->oneHopSlotStatus[i] = (rx_buffer[offset + i*sizeof(uint8_t)]) + (rx_buffer[offset + i*sizeof(uint8_t) + 1] << 8) + (rx_buffer[offset + i*sizeof(uint8_t) + 2] << 16) + (rx_buffer[offset + i*sizeof(uint8_t) + 3] << 24);
           };
 
-          offset += (sizeof(int) * NUM_SLOTS);
-          for(int i = 0; i < NUM_SLOTS; ++i) {
+          offset += (sizeof(uint8_t) * NUM_SLOTS);
+          for(uint8_t i = 0; i < NUM_SLOTS; ++i) {
             msg->oneHopSlotIds[i] = rx_buffer[offset + i];
           };
 
-          offset += sizeof(int8_t) * NUM_SLOTS;
-          for(int i = 0; i < NUM_SLOTS; ++i) {
-            msg->twoHopSlotStatus[i] = (rx_buffer[offset + i*sizeof(int)]) + (rx_buffer[offset + i*sizeof(int) + 1] << 8) + (rx_buffer[offset + i*sizeof(int) + 2] << 16) + (rx_buffer[offset + i*sizeof(int) + 3] << 24);
+          offset += sizeof(uint8_t) * NUM_SLOTS;
+          for(uint8_t i = 0; i < NUM_SLOTS; ++i) {
+            msg->twoHopSlotStatus[i] = (rx_buffer[offset + i*sizeof(uint8_t)]) + (rx_buffer[offset + i*sizeof(uint8_t) + 1] << 8) + (rx_buffer[offset + i*sizeof(uint8_t) + 2] << 16) + (rx_buffer[offset + i*sizeof(uint8_t) + 3] << 24);
           };
 
-          offset += sizeof(int) * NUM_SLOTS;
-          for(int i = 0; i < NUM_SLOTS; ++i) {
+          offset += sizeof(uint8_t) * NUM_SLOTS;
+          for(uint8_t i = 0; i < NUM_SLOTS; ++i) {
             msg->twoHopSlotIds[i] = rx_buffer[offset + i];
           };
 
-          offset += sizeof(int8_t) * NUM_SLOTS;
+          offset += sizeof(uint8_t) * NUM_SLOTS;
           msg->pingNum = rx_buffer[offset];
 
           // use the current time and subtract the difference between the rx_timestamp and the systime of the DW1000 to
@@ -517,7 +531,7 @@ int main(void) {
           printf("Type: % " PRId32 " \n", type);
           printf("Sender: %" PRId8 "\n", msg->senderId);
           printf("Network: %" PRIu8 "\n", msg->networkId);
-          for(int i = 0; i < NUM_SLOTS; ++i) {
+          for(uint8_t i = 0; i < NUM_SLOTS; ++i) {
             printf("1H (S%d): %d \n", (i+1), msg->oneHopSlotStatus[i]);
             printf("1H ID (S%d): %" PRId8 "\n", (i+1), msg->oneHopSlotIds[i]);
             printf("2H (S%d): %d \n", (i+1), msg->twoHopSlotStatus[i]);
@@ -541,7 +555,7 @@ int main(void) {
         
   #if EVAL
           uint8_t slotNum = TimeKeeping_CalculateCurrentSlotNum(&node);
-          printf("RX PING %d 0 %d %d %d \n", msg->senderId, (int) (currentTime - timediffToNow), (int) slotNum, (int) msg->pingNum);
+          printf("RX PING %x 0 %d %x %d \n", msg->senderId, (uint8_t) (currentTime - timediffToNow), slotNum, (uint8_t) msg->pingNum);
   #endif
 
         };
@@ -575,7 +589,7 @@ static uint64 get_rx_timestamp_u64(void)
 {
   uint8 ts_tab[5];
   uint64 ts = 0;
-  int i;
+  uint8_t i;
   dwt_readrxtimestamp(ts_tab);
   for (i = 4; i >= 0; i--)
   {
@@ -589,7 +603,7 @@ static uint64 get_systime_u64(void)
 {
   uint8 ts_tab[5];
   uint64 ts = 0;
-  int i;
+  uint8_t i;
   dwt_readsystime(ts_tab);
   for (i = 4; i >= 0; i--)
   {
@@ -628,7 +642,7 @@ static void initializeConfigStructs(StateMachine stateMachine, Scheduler schedul
   networkManager->networkStatus = NOT_CONNECTED;
 
   // SlotMap
-  int i;
+  uint8_t i;
   for (i = 0; i < NUM_SLOTS; ++i) {
     slotMap->oneHopSlotsStatus[i] = 0;
     slotMap->oneHopSlotsIds[i] = 0;
@@ -644,7 +658,7 @@ static void initializeConfigStructs(StateMachine stateMachine, Scheduler schedul
   for (i = 0; i < MAX_NUM_PENDING_SLOTS; ++i) {
     slotMap->pendingSlots[i] = -1;
     slotMap->localTimePendingSlotAdded[i] = -1;
-    int j;
+    uint8_t j;
     for (j = 0; j < (MAX_NUM_NODES - 1); ++j) {
       slotMap->pendingSlotsNeighbors[i][j] = -1;
       slotMap->pendingSlotAcknowledgedBy[i][j] = -1;

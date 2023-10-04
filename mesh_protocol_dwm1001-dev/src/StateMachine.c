@@ -149,7 +149,7 @@ void StateMachine_Run(Node node, Events event, Message msg) {
           // if ping is not scheduled but ranging is allowed, transition to sending a poll
           if (!pingScheduled && rangingPollAllowed && node->stateMachine->state == LISTENING_CONNECTED) {
             // get next ranging neighbor
-            int8_t nextRangingNeighborId = Neighborhood_GetNextRangingNeighbor(node);
+            uint8_t nextRangingNeighborId = Neighborhood_GetNextRangingNeighbor(node);
             if (nextRangingNeighborId != -1) {
               node->stateMachine->state = RANGING_POLL;
               StateActions_RangingPollTimeTicAction(node);

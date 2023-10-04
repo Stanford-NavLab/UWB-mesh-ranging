@@ -88,13 +88,13 @@ bool GuardConditions_ListeningConToListeningUncAllowed(Node node) {
     return true;
   };
 
-  int8_t ownSlotBuffer[MAX_NUM_OWN_SLOTS];
-  int8_t pendingSlotBuffer[MAX_NUM_PENDING_SLOTS];
-  int8_t numOwn = SlotMap_GetOwnSlots(node, &ownSlotBuffer[0], MAX_NUM_OWN_SLOTS);
-  int8_t numPending = SlotMap_GetPendingSlots(node, &pendingSlotBuffer[0], MAX_NUM_PENDING_SLOTS);
+  uint8_t ownSlotBuffer[MAX_NUM_OWN_SLOTS];
+  uint8_t pendingSlotBuffer[MAX_NUM_PENDING_SLOTS];
+  uint8_t numOwn = SlotMap_GetOwnSlots(node, &ownSlotBuffer[0], MAX_NUM_OWN_SLOTS);
+  uint8_t numPending = SlotMap_GetPendingSlots(node, &pendingSlotBuffer[0], MAX_NUM_PENDING_SLOTS);
 
   bool otherNodeHasReservedASlot = false;
-  for (int i = 0; i < NUM_SLOTS; ++i) {
+  for (uint8_t i = 0; i < NUM_SLOTS; ++i) {
     if (node->slotMap->oneHopSlotsStatus[i] == OCCUPIED)
      otherNodeHasReservedASlot = true;
   };
@@ -127,7 +127,7 @@ bool GuardConditions_RangingPollAllowed(Node node) {
   };
 
   // get the neighbor that should be done ranging with next
-  int8_t nextNeighbor = Neighborhood_GetNextRangingNeighbor(node);
+  uint8_t nextNeighbor = Neighborhood_GetNextRangingNeighbor(node);
   if (nextNeighbor == -1) {
     // if this node has no neighbors at all or no neighbors that ranging is due with, sending another poll is not allowed
     return false;
@@ -158,14 +158,14 @@ bool GuardConditions_IdleingAllowed(Node node) {
     return false;
   };
 
-  int8_t currentSlotNum = TimeKeeping_CalculateCurrentSlotNum(node);
+  uint8_t currentSlotNum = TimeKeeping_CalculateCurrentSlotNum(node);
   // only start idleing at the beginning of a frame, i.e. in the first slot
   if (currentSlotNum != 1) {
     return false;
   };
 
-  int8_t ownSlots[MAX_NUM_OWN_SLOTS];
-  int8_t numOwnSlots = SlotMap_GetOwnSlots(node, &ownSlots[0], MAX_NUM_OWN_SLOTS);
+  uint8_t ownSlots[MAX_NUM_OWN_SLOTS];
+  uint8_t numOwnSlots = SlotMap_GetOwnSlots(node, &ownSlots[0], MAX_NUM_OWN_SLOTS);
   // don't idle when slot goal not met (i.e. this node has not reserved enough nodes yet)
   if (numOwnSlots != node->config->slotGoal) {
     return false;
@@ -174,7 +174,7 @@ bool GuardConditions_IdleingAllowed(Node node) {
   int64_t lastTimeIdled = TimeKeeping_GetLastTimeIdled(node);
   int64_t localTime = ProtocolClock_GetLocalTime(node->clock);
   // only idle if last idleing was more than two frames ago
-  int8_t minNumFrames = 2;
+  uint8_t minNumFrames = 2;
   if (localTime - lastTimeIdled < minNumFrames * node->config->frameLength) {
     return false;
   };  
@@ -182,14 +182,14 @@ bool GuardConditions_IdleingAllowed(Node node) {
   // don't idle if a new neighbor joined within the last frame, unless it is already present in the slot maps 
   // (i.e. it was already in the network and likely only changed its position)
   int64_t lastJoinedTime = Neighborhood_GetTimeWhenNewestNeighborJoined(node);
-  int8_t newestNeighborId = Neighborhood_GetNewestNeighbor(node);
+  uint8_t newestNeighborId = Neighborhood_GetNewestNeighbor(node);
 
   if (localTime - lastJoinedTime <= node->config->frameLength) {
-    int8_t oneHopSlotIds[NUM_SLOTS]; 
+    uint8_t oneHopSlotIds[NUM_SLOTS]; 
     SlotMap_GetOneHopSlotMapIds(node, &oneHopSlotIds[0], NUM_SLOTS);
-    int8_t twoHopSlotIds[NUM_SLOTS]; 
+    uint8_t twoHopSlotIds[NUM_SLOTS]; 
     SlotMap_GetTwoHopSlotMapIds(node, &twoHopSlotIds[0], NUM_SLOTS);
-    int8_t threeHopSlotIds[NUM_SLOTS]; 
+    uint8_t threeHopSlotIds[NUM_SLOTS]; 
     SlotMap_GetThreeHopSlotMapIds(node, &threeHopSlotIds[0], NUM_SLOTS);
 
     bool notInOneHopSlotMap = (Util_Int8tArrayFindElement(&oneHopSlotIds[0], newestNeighborId, NUM_SLOTS) == -1); // if FindArrayElement returns -1, it means that the ID was not found in this node's oneHopSlotMap
@@ -224,11 +224,11 @@ bool GuardConditions_IdleToListeningConAllowedIncomingMsg(Node node, Message msg
   bool isForeignPing = NetworkManager_IsPingFromForeignNetwork(node, msg);
 
   // check if sending node already has a slot in this network
-  int8_t oneHopSlotIds[NUM_SLOTS]; 
+  uint8_t oneHopSlotIds[NUM_SLOTS]; 
   SlotMap_GetOneHopSlotMapIds(node, &oneHopSlotIds[0], NUM_SLOTS);
-  int8_t twoHopSlotIds[NUM_SLOTS]; 
+  uint8_t twoHopSlotIds[NUM_SLOTS]; 
   SlotMap_GetTwoHopSlotMapIds(node, &twoHopSlotIds[0], NUM_SLOTS);
-  int8_t threeHopSlotIds[NUM_SLOTS]; 
+  uint8_t threeHopSlotIds[NUM_SLOTS]; 
   SlotMap_GetThreeHopSlotMapIds(node, &threeHopSlotIds[0], NUM_SLOTS);
 
   bool notInOneHopSlotMap = (Util_Int8tArrayFindElement(&oneHopSlotIds[0], msg->senderId, NUM_SLOTS) == -1); // if FindArrayElement returns -1, it means that the senderId was not found in this node's oneHopSlotMap
@@ -237,8 +237,8 @@ bool GuardConditions_IdleToListeningConAllowedIncomingMsg(Node node, Message msg
 
   bool sendingNodeDoesNotHaveSlot = (notInOneHopSlotMap && notInTwoHopSlotMap && notInThreeHopSlotMap);
 
-  int8_t ownSlots[MAX_NUM_OWN_SLOTS];
-  int8_t numOwnSlots = SlotMap_GetOwnSlots(node, &ownSlots[0], MAX_NUM_OWN_SLOTS);
+  uint8_t ownSlots[MAX_NUM_OWN_SLOTS];
+  uint8_t numOwnSlots = SlotMap_GetOwnSlots(node, &ownSlots[0], MAX_NUM_OWN_SLOTS);
 
   // node should stop idleing if either:
   // - it received a ping from a foreign network

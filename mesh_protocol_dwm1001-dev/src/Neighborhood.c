@@ -38,14 +38,14 @@
 
 #include "../include/Neighborhood.h"
 
-static bool removeNeighbor(Node node, int8_t neighborId);
+static bool removeNeighbor(Node node, uint8_t neighborId);
 
 Neighborhood Neighborhood_Create() {
   Neighborhood self = calloc(1, sizeof(NeighborhoodStruct));
   
   // initialize values
   self->numOneHopNeighbors = 0;
-  for(int i = 0; i < (MAX_NUM_NODES - 1); ++i) {
+  for(uint8_t i = 0; i < (MAX_NUM_NODES - 1); ++i) {
     // use -1 as a sentinel value
     self->oneHopNeighbors[i] = -1;
     self->oneHopNeighborsLastSeen[i] = -1;
@@ -56,11 +56,11 @@ Neighborhood Neighborhood_Create() {
   return self;
 };
 
-void Neighborhood_AddOrUpdateOneHopNeighbor(Node node, int8_t id) {
+void Neighborhood_AddOrUpdateOneHopNeighbor(Node node, uint8_t id) {
   // find neighbor in array (if present)
   int64_t localTime = ProtocolClock_GetLocalTime(node->clock);
-  int8_t currentNumNeighbors = node->neighborhood->numOneHopNeighbors;
-  int8_t idx = Util_Int8tArrayFindElement(&node->neighborhood->oneHopNeighbors[0], id, currentNumNeighbors);
+  uint8_t currentNumNeighbors = node->neighborhood->numOneHopNeighbors;
+  uint8_t idx = Util_Int8tArrayFindElement(&node->neighborhood->oneHopNeighbors[0], id, currentNumNeighbors);
 
   if (idx == -1) {
     // neighbor not in array yet, so add neighbor
@@ -75,13 +75,13 @@ void Neighborhood_AddOrUpdateOneHopNeighbor(Node node, int8_t id) {
   };
 };
 
-int8_t Neighborhood_GetOneHopNeighbors(Node node, int8_t *buffer, int8_t size) {
+int8_t Neighborhood_GetOneHopNeighbors(Node node, uint8_t *buffer, uint8_t size) {
   if(size < node->neighborhood->numOneHopNeighbors) {
     // size of buffer is too small
     return -1;
   };
 
-  for(int i = 0; i < node->neighborhood->numOneHopNeighbors; ++i) {
+  for(uint8_t i = 0; i < node->neighborhood->numOneHopNeighbors; ++i) {
     buffer[i] = node->neighborhood->oneHopNeighbors[i];
   };
   return node->neighborhood->numOneHopNeighbors;
@@ -89,12 +89,12 @@ int8_t Neighborhood_GetOneHopNeighbors(Node node, int8_t *buffer, int8_t size) {
 
 void Neighborhood_RemoveAbsentNeighbors(Node node) {
  
-  int8_t absentNeighbors[MAX_NUM_NODES - 1];
-  int8_t numAbsentNeighbors = 0;
+  uint8_t absentNeighbors[MAX_NUM_NODES - 1];
+  uint8_t numAbsentNeighbors = 0;
   int64_t localTime = ProtocolClock_GetLocalTime(node->clock);
   
   // find absent neighbors (neighbors that have not been seen for a time longer than the absentNeighborTimeOut)
-  for(int i = 0; i < node->neighborhood->numOneHopNeighbors; ++i) {
+  for(uint8_t i = 0; i < node->neighborhood->numOneHopNeighbors; ++i) {
     if(localTime > (node->neighborhood->oneHopNeighborsLastSeen[i] + node->config->absentNeighborTimeOut)) {
       absentNeighbors[numAbsentNeighbors] = node->neighborhood->oneHopNeighbors[i];
       ++numAbsentNeighbors;
@@ -102,13 +102,13 @@ void Neighborhood_RemoveAbsentNeighbors(Node node) {
   };
 
   // remove absent neighbors
-  for(int i = 0; i < numAbsentNeighbors; ++i) {
+  for(uint8_t i = 0; i < numAbsentNeighbors; ++i) {
     removeNeighbor(node, absentNeighbors[i]);
   };
 
 };
 
-void Neighborhood_UpdateRanging(Node node, int8_t id, int64_t updateTime, double distance) {
+void Neighborhood_UpdateRanging(Node node, uint8_t id, int64_t updateTime, double distance) {
   // update the time when the last time ranging was done with this particular neighbor
 
   // find the index of the neighbor in the array
@@ -119,7 +119,7 @@ void Neighborhood_UpdateRanging(Node node, int8_t id, int64_t updateTime, double
   node->neighborhood->oneHopNeighborsLastDistance[idx] = distance;
 };
 
-int8_t Neighborhood_GetNextRangingNeighbor(Node node) {
+uint8_t Neighborhood_GetNextRangingNeighbor(Node node) {
   // find the neighbor that was not ranged for the longest time
   if (node->neighborhood->numOneHopNeighbors == 0) {
     return -1;
@@ -137,7 +137,7 @@ int8_t Neighborhood_GetNextRangingNeighbor(Node node) {
   return node->neighborhood->oneHopNeighbors[minIdx];
 };
 
-int8_t Neighborhood_GetNewestNeighbor(Node node) {
+uint8_t Neighborhood_GetNewestNeighbor(Node node) {
   // find index of the neighbor that was added last
   int16_t idxNewestNeighbor = Util_Int64tFindIdxOfMaximumInArray(&node->neighborhood->oneHopNeighborsJoinedTime[0], node->neighborhood->numOneHopNeighbors);
 
@@ -161,16 +161,16 @@ int64_t Neighborhood_GetTimeWhenNewestNeighborJoined(Node node) {
   return node->neighborhood->oneHopNeighborsJoinedTime[idxNewestNeighbor];
 };
 
-static bool removeNeighbor(Node node, int8_t neighborId) {
+static bool removeNeighbor(Node node, uint8_t neighborId) {
   // find index of neighbor that should be removed
-  int8_t idx = Util_Int8tArrayFindElement(&node->neighborhood->oneHopNeighbors[0], neighborId, node->neighborhood->numOneHopNeighbors);
+  uint8_t idx = Util_Int8tArrayFindElement(&node->neighborhood->oneHopNeighbors[0], neighborId, node->neighborhood->numOneHopNeighbors);
   if (idx == -1) {
     // id not found
     return false;
   };
 
   // decrement numOneHopNeighbors 
-  int8_t newNumNeighbors = --node->neighborhood->numOneHopNeighbors; 
+  uint8_t newNumNeighbors = --node->neighborhood->numOneHopNeighbors; 
   // let last element of oneHopNeighbors array overwrite the neighbor that has to be removed (as order is not important)
   node->neighborhood->oneHopNeighbors[idx] = node->neighborhood->oneHopNeighbors[newNumNeighbors]; 
   node->neighborhood->oneHopNeighborsLastSeen[idx] = node->neighborhood->oneHopNeighborsLastSeen[newNumNeighbors];
