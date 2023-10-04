@@ -129,16 +129,6 @@ int main(void) {
   lfclk_request();
   app_timer_init();
 
-  // keep looping/waiting until user presses the button
-  // pull pin up, cause button is connected to ground
-  nrf_gpio_cfg_input(START_BTN_GPIO_PIN,NRF_GPIO_PIN_PULLUP);
-  while (1) {
-    int res = nrf_gpio_pin_read(START_BTN_GPIO_PIN);
-    if (res == 0) {
-      // break when button is pushed
-      break;
-    };
-  };
   // these variables must be in scope during the whole execution
   bool txFinished = true;
   int64_t time = 0;
