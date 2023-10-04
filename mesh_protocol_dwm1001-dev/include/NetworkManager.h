@@ -64,7 +64,7 @@ typedef enum NetworkStatus NetworkStatus;
 */
 typedef struct NetworkManagerStruct {
   NetworkStatus networkStatus;
-  uint8_t networkId;
+  uint16_t networkId;
   uint64_t networkAgeAtJoining;
   uint64_t localTimeAtJoining;
   bool currentNetworkStartedByThisNode;
@@ -116,7 +116,7 @@ NetworkStatus NetworkManager_GetNetworkStatus(Node node);
 * @param node is the Node struct of the node that should perform this action
 * return network ID or 0 if not connected
 */
-uint8_t NetworkManager_GetNetworkId(Node node);
+uint16_t NetworkManager_GetNetworkId(Node node);
 
 /** Set all network parameters for this node for the case of a new network
 * @param node is the Node struct of the node that should perform this action
@@ -136,7 +136,7 @@ void NetworkManager_SetNetworkStatus(Node node, NetworkStatus status);
 * @param node is the Node struct of the node that should perform this action
 * @param 
 */
-void NetworkManager_SetNetworkId(Node node, uint8_t id);
+void NetworkManager_SetNetworkId(Node node, uint16_t id);
 
 /** Save the age of the network at the time this node joined it
 * @param node is the Node struct of the node that should perform this action

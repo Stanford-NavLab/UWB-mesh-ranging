@@ -79,7 +79,7 @@ void TimeKeeping_ResetTime(Node node) {
   node->timeKeeping->lastResetAt = localTime;
 };
 
-uint8_t TimeKeeping_CalculateOwnSlotAtTime(Node node, int64_t time) {
+uint16_t TimeKeeping_CalculateOwnSlotAtTime(Node node, int64_t time) {
   // calculate for a given time in which slot the node was or will be then
   int32_t frameLength = node->config->frameLength;
   int32_t slotLength = node->config->slotLength;
@@ -94,7 +94,7 @@ uint8_t TimeKeeping_CalculateOwnSlotAtTime(Node node, int64_t time) {
   return (uint16_t) slotAtQueriedTime;
 };
 
-uint8_t TimeKeeping_CalculateCurrentSlotNum(Node node) {
+uint16_t TimeKeeping_CalculateCurrentSlotNum(Node node) {
   if (!node->timeKeeping->frameStartSet) {
     // if frameStartTime not set, it is slot 1
     return 1;
@@ -115,7 +115,7 @@ uint64_t TimeKeeping_CalculateCurrentFrameNum(Node node) {
   return currentFrameNum;
 };
 
-int64_t TimeKeeping_CalculateNextStartOfSlot(Node node, uint8_t slotNum) {
+int64_t TimeKeeping_CalculateNextStartOfSlot(Node node, uint16_t slotNum) {
   int64_t nextStartTime = -1;
   if (node->timeKeeping->frameStartSet) {
     int64_t localTime = ProtocolClock_GetLocalTime(node->clock);
@@ -146,7 +146,7 @@ int64_t TimeKeeping_CalculateTimeSinceFrameStart(Node node) {
   if(!node->timeKeeping->frameStartSet) {
     return 0;
   };
-  uint8_t currentSlotNum = TimeKeeping_CalculateCurrentSlotNum(node);
+  uint16_t currentSlotNum = TimeKeeping_CalculateCurrentSlotNum(node);
   int64_t timeInSlot = calculateTimeInSlot(node);
 
   // time since the start of the current frame is the number of slot multiplied by the slot length 

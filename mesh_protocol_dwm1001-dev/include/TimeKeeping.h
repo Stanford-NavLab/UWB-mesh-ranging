@@ -103,13 +103,13 @@ void TimeKeeping_ResetTime(Node node);
 * @param time is the time for which the slot should be calculated
 * return calculated slot
 */
-uint8_t TimeKeeping_CalculateOwnSlotAtTime(Node node, int64_t time);
+uint16_t TimeKeeping_CalculateOwnSlotAtTime(Node node, int64_t time);
 
 /** Calculate the number of the slot the node is currently in
 * @param node is the Node struct of the node that should perform this action
 * return the number of the current slot
 */
-uint8_t TimeKeeping_CalculateCurrentSlotNum(Node node);
+uint16_t TimeKeeping_CalculateCurrentSlotNum(Node node);
 
 /** Calculate the number of the frame the node is currently in
 * @param node is the Node struct of the node that should perform this action
@@ -122,7 +122,7 @@ uint64_t TimeKeeping_CalculateCurrentFrameNum(Node node);
 * @param slotNum is the slot whose next beginning should be calculated
 * return the local time of the next beginning of the queried slot
 */
-int64_t TimeKeeping_CalculateNextStartOfSlot(Node node, uint8_t slotNum);
+int64_t TimeKeeping_CalculateNextStartOfSlot(Node node, uint16_t slotNum);
 
 /** Calculate the network age of a node whose ping message was received in time tics
 * @param node is the Node struct of the node that should perform this action

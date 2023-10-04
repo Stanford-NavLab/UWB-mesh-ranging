@@ -87,7 +87,7 @@ bool Scheduler_NothingScheduledYet(Node node) {
   return node->scheduler->timeNextSchedule == -1;
 };
 
-int8_t Scheduler_GetSlotOfNextSchedule(Node node) {
+uint16_t Scheduler_GetSlotOfNextSchedule(Node node) {
   uint64_t timeNextSchedule = Scheduler_GetTimeOfNextSchedule(node);
   return TimeKeeping_CalculateOwnSlotAtTime(node, timeNextSchedule);
 }
@@ -111,7 +111,7 @@ void Scheduler_ScheduleNextPing(Node node) {
       // when node is connected, the time of the next ping depends on whether it is a new reservation
       // or a regular ping in an already reserved slot
 
-      int8_t scheduleSlotNum = 0;
+      uint16_t scheduleSlotNum = 0;
       bool goalMet = SlotMap_SlotReservationGoalMet(node);
 
       uint64_t delay = 0;
@@ -125,7 +125,7 @@ void Scheduler_ScheduleNextPing(Node node) {
         delay = getRandomDelay(node);
       } else {
         // schedule ping to next own slot
-        uint8_t currentSlot = TimeKeeping_CalculateCurrentSlotNum(node);
+        uint16_t currentSlot = TimeKeeping_CalculateCurrentSlotNum(node);
         scheduleSlotNum = SlotMap_CalculateNextOwnOrPendingSlotNum(node, currentSlot);
         // add a small delay so if two nodes reserved the same slot without having common neighbors, they have a chance 
         // of recognizing this (without delay they would always send at the same time and could never "see" each other)

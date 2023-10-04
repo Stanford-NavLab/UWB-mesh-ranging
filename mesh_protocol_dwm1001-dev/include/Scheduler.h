@@ -101,7 +101,7 @@ bool Scheduler_NothingScheduledYet(Node node);
 * @param node is the Node struct of the node that should perform this action
 * return number of slot of the next scheduled ping
 */
-int8_t Scheduler_GetSlotOfNextSchedule(Node node);
+uint16_t Scheduler_GetSlotOfNextSchedule(Node node);
 
 /** Schedule the next ping automatically
 * @param node is the Node struct of the node that should perform this action

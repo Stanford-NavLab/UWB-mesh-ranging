@@ -133,7 +133,6 @@ int main(void) {
   bool txFinished = true;
   int64_t time = 0;
 
-  int id = NODE_ID;
   uint32_t seed = RANDOM_SEED;
 
   /* Create all the structs that hold the data of the node */
@@ -175,8 +174,6 @@ int main(void) {
   Node_SetLCG(&node, &lcg);
   Node_SetConfig(&node, &protocolConfig);
 
-  node.id = id;
-
   /* Set up the timer that runs the state machine on time tics */
   // Config is done in sdk_config.h
 
@@ -212,6 +209,18 @@ int main(void) {
     //Init of DW1000 Failed
     while (1) {};
   }
+
+  uint32 part_id = dwt_getpartid(); 
+  printf("id 1: %x \n", part_id);
+  printf("id 2: %d \n", part_id);
+
+  unsigned  mask;
+  mask = (1 << 16) - 1;
+  uint16_t lastXbits = part_id & mask;
+  printf("id 3: %x \n", lastXbits);
+  printf("id 4: %d \n", lastXbits);
+  node.id = lastXbits;
+
 
   // Read antenna delay from OTP
   uint32_t ant_delay;
@@ -276,7 +285,7 @@ int main(void) {
       if (dwt_read32bitreg(SYS_STATUS_ID) & SYS_STATUS_RXFCG) {
         // received message
         int64_t localTime = ProtocolClock_GetLocalTime((&node)->clock);
-        uint8_t slotNum = TimeKeeping_CalculateCurrentSlotNum((&node));
+        uint16_t slotNum = TimeKeeping_CalculateCurrentSlotNum((&node));
       
         uint32 frame_len;
 
@@ -431,7 +440,7 @@ int main(void) {
               printf("Received resulting distance to Node %d: %f \n", msg->senderId, distance);
   #endif
   #if EVAL
-              uint8_t slotNum = TimeKeeping_CalculateCurrentSlotNum(&node);
+              uint16_t slotNum = TimeKeeping_CalculateCurrentSlotNum(&node);
               printf("RX DIST %d %f %d %d 0 \n", msg->senderId, distance, (int) (currentTime - timediffToNow), (int) slotNum);
 
               uint32 part_id = dwt_getpartid(); 
@@ -471,13 +480,13 @@ int main(void) {
           offset += sizeof(int);
           msg->senderId = rx_buffer[offset];
 
-          offset += sizeof(int8_t);
+          offset += sizeof(uint16_t);
           msg->recipientId = rx_buffer[offset];
 
-          offset += sizeof(int8_t);
+          offset += sizeof(uint16_t);
           msg->networkId = rx_buffer[offset];
 
-          offset += sizeof(int8_t);
+          offset += sizeof(uint16_t);
           msg->networkAge = rx_buffer[offset] + (rx_buffer[offset + 1] << 8) + (rx_buffer[offset + 2] << 16) + (rx_buffer[offset + 3] << 24)
             + (rx_buffer[offset + 4] << 32) + (rx_buffer[offset + 5] << 40) + (rx_buffer[offset + 6] << 48) + (rx_buffer[offset + 7] << 56);
 
@@ -495,7 +504,7 @@ int main(void) {
             msg->oneHopSlotIds[i] = rx_buffer[offset + i];
           };
 
-          offset += sizeof(int8_t) * NUM_SLOTS;
+          offset += sizeof(uint16_t) * NUM_SLOTS;
           for(int i = 0; i < NUM_SLOTS; ++i) {
             msg->twoHopSlotStatus[i] = (rx_buffer[offset + i*sizeof(int)]) + (rx_buffer[offset + i*sizeof(int) + 1] << 8) + (rx_buffer[offset + i*sizeof(int) + 2] << 16) + (rx_buffer[offset + i*sizeof(int) + 3] << 24);
           };
@@ -505,7 +514,7 @@ int main(void) {
             msg->twoHopSlotIds[i] = rx_buffer[offset + i];
           };
 
-          offset += sizeof(int8_t) * NUM_SLOTS;
+          offset += sizeof(uint16_t) * NUM_SLOTS;
           msg->pingNum = rx_buffer[offset];
 
           // use the current time and subtract the difference between the rx_timestamp and the systime of the DW1000 to
@@ -540,8 +549,8 @@ int main(void) {
 
         
   #if EVAL
-          uint8_t slotNum = TimeKeeping_CalculateCurrentSlotNum(&node);
-          printf("RX PING %d 0 %d %d %d \n", msg->senderId, (int) (currentTime - timediffToNow), (int) slotNum, (int) msg->pingNum);
+          uint16_t slotNum = TimeKeeping_CalculateCurrentSlotNum(&node);
+          printf("RX PING %d 0 %d %d %d \n", msg->senderId, (int) (currentTime - timediffToNow), (uint16_t) slotNum, (int) msg->pingNum);
   #endif
 
         };

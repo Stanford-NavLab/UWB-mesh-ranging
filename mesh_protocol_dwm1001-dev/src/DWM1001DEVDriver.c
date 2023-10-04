@@ -112,19 +112,19 @@ void Driver_TransmitPing(Node node, Message msg) {
   int offset = 0;
   //dwt_writetodevice(TX_BUFFER_ID, offset, sizeof(msg->type), *msg->type);
   int tmp = msg->type;
-  memcpy(&buffer[0], &tmp, sizeof(int));
+  memcpy(&buffer[0], &tmp, sizeof(uint16_t));
 
   // write senderId
-  offset += sizeof(int);
-  memcpy(&buffer[offset], &node->id, sizeof(int8_t));
+  offset += sizeof(uint16_t);
+  memcpy(&buffer[offset], &node->id, sizeof(uint16_t));
   // write recipientId
-  offset += sizeof(int8_t);
-  memcpy(&buffer[offset], &msg->recipientId, sizeof(int8_t));
+  offset += sizeof(uint16_t);
+  memcpy(&buffer[offset], &msg->recipientId, sizeof(uint16_t));
   // write networkId
-  offset += sizeof(int8_t);
-  memcpy(&buffer[offset], &msg->networkId, sizeof(uint8_t));
+  offset += sizeof(uint16_t);
+  memcpy(&buffer[offset], &msg->networkId, sizeof(uint16_t));
   // write networkAge
-  offset += sizeof(uint8_t);
+  offset += sizeof(uint16_t);
   memcpy(&buffer[offset], &msg->networkAge, sizeof(int64_t));
   // write timeSinceFrameStart
   offset += sizeof(int64_t);
@@ -134,14 +134,14 @@ void Driver_TransmitPing(Node node, Message msg) {
   memcpy(&buffer[offset], &msg->oneHopSlotStatus, sizeof(int) * NUM_SLOTS);
   // write oneHopSlotIds
   offset += (sizeof(int) * NUM_SLOTS);
-  memcpy(&buffer[offset], &msg->oneHopSlotIds, sizeof(int8_t) * NUM_SLOTS);
+  memcpy(&buffer[offset], &msg->oneHopSlotIds, sizeof(uint16_t) * NUM_SLOTS);
   // write twoHopSlotStatus
-  offset += (sizeof(int8_t) * NUM_SLOTS);
+  offset += (sizeof(uint16_t) * NUM_SLOTS);
   memcpy(&buffer[offset], &msg->twoHopSlotStatus, sizeof(int) * NUM_SLOTS);
   // write twoHopSlotIds
   offset += (sizeof(int) * NUM_SLOTS);
-  memcpy(&buffer[offset], &msg->twoHopSlotIds, sizeof(int8_t) * NUM_SLOTS);
-  offset += (sizeof(int8_t) * NUM_SLOTS);
+  memcpy(&buffer[offset], &msg->twoHopSlotIds, sizeof(uint16_t) * NUM_SLOTS);
+  offset += (sizeof(uint16_t) * NUM_SLOTS);
 
   memcpy(&buffer[offset], &pingsSent, sizeof(int16_t));
   offset += (sizeof(int16_t));
@@ -177,7 +177,7 @@ void Driver_TransmitPing(Node node, Message msg) {
   dwt_rxenable(DWT_START_RX_IMMEDIATE);
 
   int64_t localTime = ProtocolClock_GetLocalTime(node->clock);
-  uint8_t slotNum = TimeKeeping_CalculateCurrentSlotNum(node);
+  uint16_t slotNum = TimeKeeping_CalculateCurrentSlotNum(node);
 
 #if DEBUG
   printf("%d: Node %" PRId8 " sent ping %d in slot %" PRIu8 " \n", (int) localTime, node->id, pingsSent, slotNum);
@@ -448,7 +448,7 @@ void Driver_TransmitResult(Node node, Message msg) {
 #endif
 
 #if EVAL
-  uint8_t slotNum = TimeKeeping_CalculateCurrentSlotNum(node);
+  uint16_t slotNum = TimeKeeping_CalculateCurrentSlotNum(node);
   printf("TX DIST %d %f %d %d 0 \n", (int) msg->senderId, distance, (int) currentTime, (int) slotNum);
 #endif
 

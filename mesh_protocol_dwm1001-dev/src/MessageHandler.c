@@ -131,13 +131,13 @@ void MessageHandler_SendPing(Node node) {
   // transmit message via driver
   Driver_TransmitPing(node, msg);
 
-  int8_t currentSlot = TimeKeeping_CalculateCurrentSlotNum(node);
+  uint16_t currentSlot = TimeKeeping_CalculateCurrentSlotNum(node);
   bool isOwn = SlotMap_IsOwnSlot(node, currentSlot);
   bool isPending = SlotMap_IsPendingSlot(node, currentSlot);
 
   // if the current slot is not already pending or own, add it to pending (it was a new reservation attempt)
   if (!isOwn && !isPending) {
-    int8_t neighbors[MAX_NUM_NODES - 1];
+    uint16_t neighbors[MAX_NUM_NODES - 1];
 
     // get the neighbors of the node at this particular time, cause these neighbors need to acknowledge the ping 
     // Note: currently only the number of neighbors that ack'ed is checked, not which neighbors exactly (simpler implementation)
@@ -210,14 +210,14 @@ static void updateSlots(Node node, Message msg) {
   SlotMap_UpdatePendingSlotAcks(node, msg);
   
   // add pending slots that were acknowledged by all required nodes to own slots
-  int8_t acknowledgedPendingSlots[MAX_NUM_PENDING_SLOTS];
+  uint16_t acknowledgedPendingSlots[MAX_NUM_PENDING_SLOTS];
   int8_t numAcked = SlotMap_GetAcknowledgedPendingSlots(node, &acknowledgedPendingSlots[0], MAX_NUM_PENDING_SLOTS);
   for(int i = 0; i < numAcked; ++i) {
     SlotMap_ChangePendingToOwn(node, acknowledgedPendingSlots[i]);
   };
   
   // check if own slots were reported as colliding by the sending node
-  int8_t collidingOwnSlots[MAX_NUM_OWN_SLOTS];
+  uint16_t collidingOwnSlots[MAX_NUM_OWN_SLOTS];
   int8_t numCollidingOwn = SlotMap_CheckOwnSlotsForCollisions(node, msg, &collidingOwnSlots[0], MAX_NUM_OWN_SLOTS);
 
   // release colliding own slots
@@ -226,7 +226,7 @@ static void updateSlots(Node node, Message msg) {
   };
 
   // check if pending slots were reported as colliding by the sending node
-  int8_t collidingPendingSlots[MAX_NUM_PENDING_SLOTS];
+  uint16_t collidingPendingSlots[MAX_NUM_PENDING_SLOTS];
   int8_t numCollidingPending = SlotMap_CheckPendingSlotsForCollisions(node, msg, &collidingPendingSlots[0], MAX_NUM_PENDING_SLOTS);
   // release colliding pending slots
   for (int i = 0; i < numCollidingPending; ++i) {
@@ -234,16 +234,16 @@ static void updateSlots(Node node, Message msg) {
   };
 
   // update the internal slot maps of this nodes with the information in the message
-  uint8_t currentSlot = TimeKeeping_CalculateCurrentSlotNum(node);
+  uint16_t currentSlot = TimeKeeping_CalculateCurrentSlotNum(node);
   SlotMap_UpdateOneHopSlotMap(node, msg, currentSlot);
   
   SlotMap_UpdateTwoHopSlotMap(node, msg);
   SlotMap_UpdateThreeHopSlotMap(node, msg);
 
   // cancel the next schedule if the corresponding slot was released 
-  int8_t nextScheduledSlot = Scheduler_GetSlotOfNextSchedule(node);
-  int16_t idxCollidingOwn = Util_Int8tArrayFindElement(&collidingOwnSlots[0], nextScheduledSlot, numCollidingOwn);
-  int16_t idxCollidingPending = Util_Int8tArrayFindElement(&collidingPendingSlots[0], nextScheduledSlot, numCollidingPending);
+  uint16_t nextScheduledSlot = Scheduler_GetSlotOfNextSchedule(node);
+  uint16_t idxCollidingOwn = Util_Int8tArrayFindElement(&collidingOwnSlots[0], nextScheduledSlot, numCollidingOwn);
+  uint16_t idxCollidingPending = Util_Int8tArrayFindElement(&collidingPendingSlots[0], nextScheduledSlot, numCollidingPending);
 
   bool nextScheduledIsCollidingOwn = false;
   bool nextScheduledIsCollidingPending = false;

@@ -124,7 +124,7 @@ NetworkStatus NetworkManager_GetNetworkStatus(Node node) {
   return node->networkManager->networkStatus;
 };
 
-uint8_t NetworkManager_GetNetworkId(Node node) {
+uint16_t NetworkManager_GetNetworkId(Node node) {
   if (node->networkManager->networkStatus == NOT_CONNECTED) {
     return 0;
   };
@@ -136,7 +136,7 @@ void NetworkManager_SetNetworkStatus(Node node, NetworkStatus status) {
   node->networkManager->networkStatus = status;
 };
 
-void NetworkManager_SetNetworkId(Node node, uint8_t id) {
+void NetworkManager_SetNetworkId(Node node, uint16_t id) {
   node->networkManager->networkId = id;
   if(id == node->id) {
     node->networkManager->currentNetworkStartedByThisNode = true;
