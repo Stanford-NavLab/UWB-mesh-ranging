@@ -81,7 +81,7 @@ typedef struct ConfigStruct * Config;
 * config: struct that holds the data of the Config
 */
 typedef struct NodeStruct{
-  int8_t id;
+  uint32_t id;
   StateMachine stateMachine;
   ProtocolClock clock;
   Scheduler scheduler;

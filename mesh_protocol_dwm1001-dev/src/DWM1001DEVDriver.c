@@ -72,8 +72,8 @@ static volatile int rx_count = 0 ; // Successful receive counter
 
 static uint64 get_tx_timestamp_u64(void);
 static uint64 get_rx_timestamp_u64(void);
-static void final_msg_set_ts(uint8 *ts_field, uint64 ts);
-static void final_msg_get_ts(const uint8 *ts_field, uint32 *ts);
+static void final_msg_set_ts(uint32_t *ts_field, uint64 ts);
+static void final_msg_get_ts(const uint32_t *ts_field, uint32 *ts);
 
 
 Driver Driver_Create(bool *txFinishedFlag, bool *isReceiving) {
@@ -105,7 +105,7 @@ void Driver_TransmitPing(Node node, Message msg) {
 
   /** Write the Message to the TX buffer of DW1000 */
   // write type
-  uint8_t buffer[127]; // 127 is maximum length in non-extended mode
+  uint32_t buffer[127]; // 127 is maximum length in non-extended mode
   // set all to zero first
   memset(buffer, 0, 127);
   // offset is the current index in the buffer 
@@ -116,15 +116,15 @@ void Driver_TransmitPing(Node node, Message msg) {
 
   // write senderId
   offset += sizeof(int);
-  memcpy(&buffer[offset], &node->id, sizeof(int8_t));
+  memcpy(&buffer[offset], &node->id, sizeof(uint32_t));
   // write recipientId
-  offset += sizeof(int8_t);
-  memcpy(&buffer[offset], &msg->recipientId, sizeof(int8_t));
+  offset += sizeof(uint32_t);
+  memcpy(&buffer[offset], &msg->recipientId, sizeof(uint32_t));
   // write networkId
-  offset += sizeof(int8_t);
-  memcpy(&buffer[offset], &msg->networkId, sizeof(uint8_t));
+  offset += sizeof(uint32_t);
+  memcpy(&buffer[offset], &msg->networkId, sizeof(uint32_t));
   // write networkAge
-  offset += sizeof(uint8_t);
+  offset += sizeof(uint32_t);
   memcpy(&buffer[offset], &msg->networkAge, sizeof(int64_t));
   // write timeSinceFrameStart
   offset += sizeof(int64_t);
@@ -134,14 +134,14 @@ void Driver_TransmitPing(Node node, Message msg) {
   memcpy(&buffer[offset], &msg->oneHopSlotStatus, sizeof(int) * NUM_SLOTS);
   // write oneHopSlotIds
   offset += (sizeof(int) * NUM_SLOTS);
-  memcpy(&buffer[offset], &msg->oneHopSlotIds, sizeof(int8_t) * NUM_SLOTS);
+  memcpy(&buffer[offset], &msg->oneHopSlotIds, sizeof(uint32_t) * NUM_SLOTS);
   // write twoHopSlotStatus
-  offset += (sizeof(int8_t) * NUM_SLOTS);
+  offset += (sizeof(uint32_t) * NUM_SLOTS);
   memcpy(&buffer[offset], &msg->twoHopSlotStatus, sizeof(int) * NUM_SLOTS);
   // write twoHopSlotIds
   offset += (sizeof(int) * NUM_SLOTS);
-  memcpy(&buffer[offset], &msg->twoHopSlotIds, sizeof(int8_t) * NUM_SLOTS);
-  offset += (sizeof(int8_t) * NUM_SLOTS);
+  memcpy(&buffer[offset], &msg->twoHopSlotIds, sizeof(uint32_t) * NUM_SLOTS);
+  offset += (sizeof(uint32_t) * NUM_SLOTS);
 
   memcpy(&buffer[offset], &pingsSent, sizeof(int16_t));
   offset += (sizeof(int16_t));
@@ -177,14 +177,14 @@ void Driver_TransmitPing(Node node, Message msg) {
   dwt_rxenable(DWT_START_RX_IMMEDIATE);
 
   int64_t localTime = ProtocolClock_GetLocalTime(node->clock);
-  uint8_t slotNum = TimeKeeping_CalculateCurrentSlotNum(node);
+  uint32_t slotNum = TimeKeeping_CalculateCurrentSlotNum(node);
 
 #if DEBUG
   printf("%d: Node %" PRId8 " sent ping %d in slot %" PRIu8 " \n", (int) localTime, node->id, pingsSent, slotNum);
 #endif
 
 #if EVAL
-  printf("TX PING %d 0 %d %d %d \n", (int) node->id, (int) localTime, (int) slotNum, (int) pingsSent);
+  printf("TX PING %x 0 %d %d %d \n", node->id, (int) localTime, (int) slotNum, (int) pingsSent);
 #endif
 
   pingsSent += 1;
@@ -448,7 +448,7 @@ void Driver_TransmitResult(Node node, Message msg) {
 #endif
 
 #if EVAL
-  uint8_t slotNum = TimeKeeping_CalculateCurrentSlotNum(node);
+  uint32_t slotNum = TimeKeeping_CalculateCurrentSlotNum(node);
   printf("TX DIST %d %f %d %d 0 \n", (int) msg->senderId, distance, (int) currentTime, (int) slotNum);
 #endif
 
@@ -492,7 +492,7 @@ void Driver_SetMessageSentFlag(Node node, bool value) {
  */
 static uint64 get_tx_timestamp_u64(void)
 {
-    uint8 ts_tab[5];
+    uint32_t ts_tab[5];
     uint64 ts = 0;
     int i;
     dwt_readtxtimestamp(ts_tab);
@@ -516,7 +516,7 @@ static uint64 get_tx_timestamp_u64(void)
  */
 static uint64 get_rx_timestamp_u64(void)
 {
-    uint8 ts_tab[5];
+    uint32_t ts_tab[5];
     uint64 ts = 0;
     int i;
     dwt_readrxtimestamp(ts_tab);
@@ -539,12 +539,12 @@ static uint64 get_rx_timestamp_u64(void)
  *
  * @return none
  */
-static void final_msg_set_ts(uint8 *ts_field, uint64 ts)
+static void final_msg_set_ts(uint32_t *ts_field, uint64 ts)
 {
     int i;
     for (i = 0; i < FINAL_MSG_TS_LEN; i++)
     {
-        ts_field[i] = (uint8) ts;
+        ts_field[i] = (uint32_t) ts;
         ts >>= 8;
     }
 }
@@ -560,7 +560,7 @@ static void final_msg_set_ts(uint8 *ts_field, uint64 ts)
  *
  * @return none
  */
-static void final_msg_get_ts(const uint8 *ts_field, uint32 *ts)
+static void final_msg_get_ts(const uint32_t *ts_field, uint32 *ts)
 {
     int i;
     *ts = 0;

@@ -40,7 +40,7 @@
 
 static int compare( const void* a, const void* b);
 
-int16_t Util_Int8tArrayFindElement(int8_t *array, int8_t element, int16_t arraySize) {
+int16_t Util_Uint32tArrayFindElement(uint32_t *array, uint32_t element, int16_t arraySize) {
   // compare each array element with the element that should be found
   for (int i = 0; i < arraySize; ++i) {
     if (array[i] == element) {
@@ -50,7 +50,7 @@ int16_t Util_Int8tArrayFindElement(int8_t *array, int8_t element, int16_t arrayS
   return -1;
 };
 
-int16_t Util_IntersectSortedInt8tArrays(int8_t *array1, int8_t size1, int8_t *array2, int8_t size2, int8_t *intersection) {
+int16_t Util_IntersectSortedInt8tArrays(uint32_t *array1, int8_t size1, uint32_t *array2, int8_t size2, uint32_t *intersection) {
   int16_t i = 0;
   int16_t j = 0;
   int16_t numCommonElements = 0;
@@ -72,14 +72,14 @@ int16_t Util_IntersectSortedInt8tArrays(int8_t *array1, int8_t size1, int8_t *ar
   return numCommonElements;
 };
 
-void Util_SortInt8tArray(int8_t *array, int8_t arraySize, int8_t *sorted) {
+void Util_SortInt8tArray(uint32_t *array, uint32_t arraySize, uint32_t *sorted) {
   memcpy(array, sorted, arraySize);
-  qsort(sorted, arraySize, sizeof(int8_t), compare);
+  qsort(sorted, arraySize, sizeof(uint32_t), compare);
 };
 
-int16_t Util_Int8tFindIdxOfMinimumInArray(int8_t *array, int16_t arraySize) {
+int16_t Util_Int8tFindIdxOfMinimumInArray(uint32_t *array, int16_t arraySize) {
   int16_t minIdx = 0;
-  int8_t minValue = array[0];
+  uint32_t minValue = array[0];
   // iterate over the array and save the smallest value and its index
   for (int i = 1; i < arraySize; ++i) {
     if (array[i] < minValue) {
@@ -118,8 +118,8 @@ int16_t Util_Int64tFindIdxOfMaximumInArray(int64_t *array, int16_t arraySize) {
 
 static int compare( const void* a, const void* b) {
    // (c) Alex Reece; https://stackoverflow.com/questions/3893937/sorting-an-array-in-c
-   int8_t int_a = * ( (int8_t*) a );
-   int8_t int_b = * ( (int8_t*) b );
+   uint32_t int_a = * ( (uint32_t*) a );
+   uint32_t int_b = * ( (uint32_t*) b );
 
    if(int_a == int_b){
     return 0;

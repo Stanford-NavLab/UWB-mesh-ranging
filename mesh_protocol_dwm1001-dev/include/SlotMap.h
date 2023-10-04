@@ -113,24 +113,24 @@ typedef enum SlotOccupancy SlotOccupancy;
 */
 typedef struct SlotMapStruct {
   int oneHopSlotsStatus[NUM_SLOTS];
-  int8_t oneHopSlotsIds[NUM_SLOTS];
+  uint32_t oneHopSlotsIds[NUM_SLOTS];
   int64_t oneHopSlotsLastUpdated[NUM_SLOTS];
 
   int twoHopSlotsStatus[NUM_SLOTS];
-  int8_t twoHopSlotsIds[NUM_SLOTS];
+  uint32_t twoHopSlotsIds[NUM_SLOTS];
   int64_t twoHopSlotsLastUpdated[NUM_SLOTS];
 
   int threeHopSlotsStatus[NUM_SLOTS];
-  int8_t threeHopSlotsIds[NUM_SLOTS];
+  uint32_t threeHopSlotsIds[NUM_SLOTS];
   int64_t threeHopSlotsLastUpdated[NUM_SLOTS];
 
-  int8_t pendingSlots[MAX_NUM_PENDING_SLOTS];
+  uint32_t pendingSlots[MAX_NUM_PENDING_SLOTS];
   int8_t numPendingSlots;
-  int8_t pendingSlotsNeighbors[MAX_NUM_PENDING_SLOTS][MAX_NUM_NODES - 1]; // for every pending slot: IDs of neighbors at the time the slot was added (neighbors that need to acknowledge)
+  uint32_t pendingSlotsNeighbors[MAX_NUM_PENDING_SLOTS][MAX_NUM_NODES - 1]; // for every pending slot: IDs of neighbors at the time the slot was added (neighbors that need to acknowledge)
   int64_t localTimePendingSlotAdded[MAX_NUM_PENDING_SLOTS];
-  int8_t pendingSlotAcknowledgedBy[MAX_NUM_PENDING_SLOTS][MAX_NUM_NODES - 1];
+  uint32_t pendingSlotAcknowledgedBy[MAX_NUM_PENDING_SLOTS][MAX_NUM_NODES - 1];
 
-  int8_t ownSlots[MAX_NUM_OWN_SLOTS];
+  uint32_t ownSlots[MAX_NUM_OWN_SLOTS];
   int8_t numOwnSlots;
 
   int64_t lastReservationTime;
@@ -144,7 +144,7 @@ SlotMap SlotMap_Create();
 * @param msg is a ping message from another node
 * @param currentSlot is the current slot at the time this message was received  
 */
-void SlotMap_UpdateOneHopSlotMap(Node node, Message msg, int8_t currentSlot);
+void SlotMap_UpdateOneHopSlotMap(Node node, Message msg, uint32_t currentSlot);
 
 /** Update the two hop slot map of this node based on information in a ping of another node
 * @param node is the Node struct of the node that should perform this action
@@ -172,7 +172,7 @@ bool SlotMap_GetOneHopSlotMapStatus(Node node, int *buffer, int8_t size);
 * @param size is the size of the buffer (to avoid illegal memory access)
 * return true if buffer contains the Ids; false if it failed
 */
-bool SlotMap_GetOneHopSlotMapIds(Node node, int8_t *buffer, int8_t size);
+bool SlotMap_GetOneHopSlotMapIds(Node node, uint32_t *buffer, int8_t size);
 
 /** Get the one hop last updated time of all slots
 * @param node is the Node struct of the node that should perform this action
@@ -196,7 +196,7 @@ bool SlotMap_GetTwoHopSlotMapStatus(Node node, int *buffer, int8_t size);
 * @param size is the size of the buffer (to avoid illegal memory access)
 * return true if buffer contains the IDs; false if it failed
 */
-bool SlotMap_GetTwoHopSlotMapIds(Node node, int8_t *buffer, int8_t size);
+bool SlotMap_GetTwoHopSlotMapIds(Node node, uint32_t *buffer, int8_t size);
 
 /** Get the three hop status of all slots
 * @param node is the Node struct of the node that should perform this action
@@ -212,7 +212,7 @@ bool SlotMap_GetThreeHopSlotMapStatus(Node node, int *buffer, int8_t size);
 * @param size is the size of the buffer (to avoid illegal memory access)
 * return true if buffer contains the IDs; false if it failed
 */
-bool SlotMap_GetThreeHopSlotMapIds(Node node, int8_t *buffer, int8_t size);
+bool SlotMap_GetThreeHopSlotMapIds(Node node, uint32_t *buffer, int8_t size);
 
 /** Checks if own slots are reported as colliding or occupied by a different node in a ping message of another node
 * @param node is the Node struct of the node that should perform this action
@@ -221,7 +221,7 @@ bool SlotMap_GetThreeHopSlotMapIds(Node node, int8_t *buffer, int8_t size);
 * @param size is the size of the buffer (to avoid illegal memory access)
 * return number of colliding own slots
 */
-int8_t SlotMap_CheckOwnSlotsForCollisions(Node node, Message msg, int8_t *buffer, int8_t size);
+uint32_t SlotMap_CheckOwnSlotsForCollisions(Node node, Message msg, uint32_t *buffer, int8_t size);
 
 /** Checks if pending slots are reported as colliding or occupied by a different node in a ping message of another node
 * @param node is the Node struct of the node that should perform this action
@@ -230,7 +230,7 @@ int8_t SlotMap_CheckOwnSlotsForCollisions(Node node, Message msg, int8_t *buffer
 * @param size is the size of the buffer (to avoid illegal memory access)
 * return number of colliding pending slots
 */
-int8_t SlotMap_CheckPendingSlotsForCollisions(Node node, Message msg, int8_t *buffer, int8_t size);
+uint32_t SlotMap_CheckPendingSlotsForCollisions(Node node, Message msg, uint32_t *buffer, int8_t size);
 
 /** Check if this node has reserved enough slots
 * @param node is the Node struct of the node that should perform this action
@@ -244,14 +244,14 @@ bool SlotMap_SlotReservationGoalMet(Node node);
 *
 * If there are more than one reservable slots, one of them is chosen randomly
 */
-int8_t SlotMap_GetReservableSlot(Node node);
+uint32_t SlotMap_GetReservableSlot(Node node);
 
 /** Calculate the slot number of either the next own or pending slot, whichever comes first
 * @param node is the Node struct of the node that should perform this action
 * @param currentSlot is the slot number of the current slot
 * return slot number of the next own or pending slot or -1 if there are no own and pending slots
 */
-int8_t SlotMap_CalculateNextOwnOrPendingSlotNum(Node node, int8_t currentSlot);
+uint32_t SlotMap_CalculateNextOwnOrPendingSlotNum(Node node, uint32_t currentSlot);
 
 /** Update pending slots based on a ping message from another node
 * @param node is the Node struct of the node that should perform this action
@@ -269,14 +269,14 @@ void SlotMap_UpdatePendingSlotAcks(Node node, Message msg);
 * @param arraySize is the size of the array (to avoid illegal memory access)
 * returns true if the slot was added or false if it could not be added (maximum number of pending slots reached)
 */
-bool SlotMap_AddPendingSlot(Node node, int8_t slotNum, int8_t *neighborsArray, int8_t neighborsArraySize);
+bool SlotMap_AddPendingSlot(Node node, uint32_t slotNum, uint32_t *neighborsArray, uint32_t neighborsArraySize);
 
 /** Change pending slot to own slot
 * @param node is the Node struct of the node that should perform this action
 * @param slotNum is the number of the pending slot that should be made an own slot
 * return true if the slot was added to own or false if the slot was not a pending slot
 */
-bool SlotMap_ChangePendingToOwn(Node node, int8_t slotNum);
+bool SlotMap_ChangePendingToOwn(Node node, uint32_t slotNum);
 
 /** Check if the network created by this node was actually successfully created
 * @param node is the Node struct of the node that should perform this action
@@ -287,7 +287,7 @@ bool SlotMap_ChangePendingToOwn(Node node, int8_t slotNum);
 * Checks if all own slots are colliding and no other node reserved a slot, which means this node cannot be 
 * sure that the network really exists (meaning any other node actually received a message from this node)
 */
-bool SlotMap_OwnNetworkExists(Node node, int8_t *collidingSlots, int8_t collidingSlotsSize);
+bool SlotMap_OwnNetworkExists(Node node, uint32_t *collidingSlots, uint32_t collidingSlotsSize);
 
 /** Checks if this slot can be used to send a ping
 * @param node is the Node struct of the node that should perform this action
@@ -303,7 +303,7 @@ bool SlotMap_ClearToSend(Node node);
 * 
 * Check is based on all informations in the slot maps
 */
-bool SlotMap_SlotIsFree(Node node, int8_t slotNum);
+bool SlotMap_SlotIsFree(Node node, uint32_t slotNum);
 
 /** Checks if a slot is free for this node in a three hop neighborhood
 * @param node is the Node struct of the node that should perform this action
@@ -313,7 +313,7 @@ bool SlotMap_SlotIsFree(Node node, int8_t slotNum);
 * "free for this node" means the slot can either be free or being reported occupied by this node in
 * any of the slot maps; it is then also fine for this node to use the slot
 */
-bool SlotMap_SlotIsFreeForThisNode(Node node, int8_t slotNum);
+bool SlotMap_SlotIsFreeForThisNode(Node node, uint32_t slotNum);
 
 /** Checks if a slot is colliding in a three hop neighborhood
 * @param node is the Node struct of the node that should perform this action
@@ -322,7 +322,7 @@ bool SlotMap_SlotIsFreeForThisNode(Node node, int8_t slotNum);
 *
 * Check is based on all informations in the slot maps
 */
-bool SlotMap_SlotIsColliding(Node node, int8_t slotNum);
+bool SlotMap_SlotIsColliding(Node node, uint32_t slotNum);
 
 /** Get all pending slots of this node that were acknowledged
 * @param node is the Node struct of the node that should perform this action
@@ -330,7 +330,7 @@ bool SlotMap_SlotIsColliding(Node node, int8_t slotNum);
 * @param size is the size of the buffer (to avoid illegal memory access)
 * return the number of acknowledged pending slots or -1 if buffer is too small
 */
-int8_t SlotMap_GetAcknowledgedPendingSlots(Node node, int8_t *buffer, int8_t size);
+uint32_t SlotMap_GetAcknowledgedPendingSlots(Node node, uint32_t *buffer, int8_t size);
 
 /** Get all pending slots of this node
 * @param node is the Node struct of the node that should perform this action
@@ -338,7 +338,7 @@ int8_t SlotMap_GetAcknowledgedPendingSlots(Node node, int8_t *buffer, int8_t siz
 * @param size is the size of the buffer (to avoid illegal memory access)
 * return the number of pending slots
 */
-int8_t SlotMap_GetPendingSlots(Node node, int8_t *buffer, int8_t size);
+uint32_t SlotMap_GetPendingSlots(Node node, uint32_t *buffer, int8_t size);
 
 /** Get all own slots of this node
 * @param node is the Node struct of the node that should perform this action
@@ -346,7 +346,7 @@ int8_t SlotMap_GetPendingSlots(Node node, int8_t *buffer, int8_t size);
 * @param size is the size of the buffer (to avoid illegal memory access)
 * return the number of own slots
 */
-int8_t SlotMap_GetOwnSlots(Node node, int8_t *buffer, int8_t size);
+int8_t SlotMap_GetOwnSlots(Node node, uint32_t *buffer, int8_t size);
 
 /** Remove all collisions from collisionTimes that are older than a certain period of time
 * @param node is the Node struct of the node that should perform this action
@@ -362,27 +362,27 @@ int64_t SlotMap_GetLastReservationTime(Node node);
 * @param node is the Node struct of the node that should perform this action
 * @param slotNum is the number of the slot to be checked
 */
-bool SlotMap_IsOwnSlot(Node node, int8_t slotNum);
+bool SlotMap_IsOwnSlot(Node node, uint32_t slotNum);
 
 /** Check if slot is pending slot
 * @param node is the Node struct of the node that should perform this action
 * @param slotNum is the number of the slot to be checked
 */
-bool SlotMap_IsPendingSlot(Node node, int8_t slotNum);
+bool SlotMap_IsPendingSlot(Node node, uint32_t slotNum);
 
 /** Remove slot from own slots
 * @param node is the Node struct of the node that should perform this action
 * @param slotNum is the number of the slot to be removed
 * return true if slot was released or false if it was not an own slot
 */
-bool SlotMap_ReleaseOwnSlot(Node node, int8_t slotNum);
+bool SlotMap_ReleaseOwnSlot(Node node, uint32_t slotNum);
 
 /** Remove slot from pending slots
 * @param node is the Node struct of the node that should perform this action
 * @param slotNum is the number of the slot to be removed
 * return true if slot was released or false if it was not a pending slot
 */
-bool SlotMap_ReleasePendingSlot(Node node, int8_t slotNum);
+bool SlotMap_ReleasePendingSlot(Node node, uint32_t slotNum);
 
 /** Remove all expired slots from one hop slot map
 * @param node is the Node struct of the node that should perform this action
@@ -411,7 +411,7 @@ void SlotMap_RemoveExpiredSlotsFromThreeHopSlotMap(Node node);
 * @param size is the size of the buffer (to avoid illegal memory access)
 * return number of removed pending slots
 */
-int16_t SlotMap_RemoveExpiredPendingSlots(Node node, int8_t *buffer, int8_t size);
+int16_t SlotMap_RemoveExpiredPendingSlots(Node node, uint32_t *buffer, int8_t size);
 
 /** Remove all expired own slots
 * @param node is the Node struct of the node that should perform this action
@@ -419,7 +419,7 @@ int16_t SlotMap_RemoveExpiredPendingSlots(Node node, int8_t *buffer, int8_t size
 * @param size is the size of the buffer (to avoid illegal memory access)
 * return number of removed own slots
 */
-int16_t SlotMap_RemoveExpiredOwnSlots(Node node, int8_t *buffer, int8_t size);
+int16_t SlotMap_RemoveExpiredOwnSlots(Node node, uint32_t *buffer, int8_t size);
 
 /** Extend timeouts of slots after the node has slept
 * @param node is the Node struct of the node that should perform this action

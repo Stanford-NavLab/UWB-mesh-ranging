@@ -55,8 +55,8 @@ bool RangingManager_HasRangingTimedOut(Node node) {
   };
 
   // it also timed out if the slot ended in which the ranging started 
-  uint8_t startSlot = TimeKeeping_CalculateOwnSlotAtTime(node, lastRangingMsgOutTime);
-  uint8_t currentSlot = TimeKeeping_CalculateCurrentSlotNum(node);
+  uint32_t startSlot = TimeKeeping_CalculateOwnSlotAtTime(node, lastRangingMsgOutTime);
+  uint32_t currentSlot = TimeKeeping_CalculateCurrentSlotNum(node);
   if (startSlot != currentSlot) {
     return true;
   };

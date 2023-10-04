@@ -81,16 +81,16 @@ typedef enum MessageSizes MessageSizes;
 */
 typedef struct MessageStruct {
   MessageTypes type;
-  int8_t senderId;
-  int8_t recipientId;
+  uint32_t senderId;
+  uint32_t recipientId;
   int64_t timestamp;                  // timestamp of arrival 
-  uint8_t networkId;
+  uint32_t networkId;
   int64_t networkAge;                 // network age at time of sending (not at completion of the message - therefore arrival of preamble is used later)
   int64_t timeSinceFrameStart;
   int oneHopSlotStatus[NUM_SLOTS];
-  int8_t oneHopSlotIds[NUM_SLOTS];
+  uint32_t oneHopSlotIds[NUM_SLOTS];
   int twoHopSlotStatus[NUM_SLOTS];
-  int8_t twoHopSlotIds[NUM_SLOTS];
+  uint32_t twoHopSlotIds[NUM_SLOTS];
   int64_t collisionTimes[MAX_NUM_COLLISIONS_RECORDED];  // used to report collisions to foreign networks (contains time since the collision happened, so it is independent of slot synchronization)
   int8_t numCollisions;               // number of collision times actually contained in the message
   double distance;
