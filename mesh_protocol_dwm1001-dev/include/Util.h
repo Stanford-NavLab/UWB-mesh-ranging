@@ -68,13 +68,6 @@ int16_t Util_Int8tArrayFindElement(int8_t *array, int8_t element, int16_t arrayS
 */
 int16_t Util_IntersectSortedInt8tArrays(int8_t *array1, int8_t size1, int8_t *array2, int8_t size2, int8_t *intersection);
 
-/** Sort an int8_t array in ascending order
-* @param array is a pointer to the array that should be sorted
-* @param arraySize is the size of the array
-* @param sorted is a pointer to an array that should contain the sorted values; must be at least as big as the input array
-*/
-void Util_SortInt8tArray(int8_t *array, int8_t arraySize, int8_t *sorted);
-
 /** Find the index of the smallest value in an int8_t array
 * @param array is a pointer to the int8_t-array that should be searched
 * @param arraySize is the size of the array (to avoid illegal memory access)

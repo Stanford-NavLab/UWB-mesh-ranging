@@ -72,11 +72,6 @@ int16_t Util_IntersectSortedInt8tArrays(int8_t *array1, int8_t size1, int8_t *ar
   return numCommonElements;
 };
 
-void Util_SortInt8tArray(int8_t *array, int8_t arraySize, int8_t *sorted) {
-  memcpy(array, sorted, arraySize);
-  qsort(sorted, arraySize, sizeof(int8_t), compare);
-};
-
 int16_t Util_Int8tFindIdxOfMinimumInArray(int8_t *array, int16_t arraySize) {
   int16_t minIdx = 0;
   int8_t minValue = array[0];
@@ -114,18 +109,4 @@ int16_t Util_Int64tFindIdxOfMaximumInArray(int64_t *array, int16_t arraySize) {
     };
   };
   return maxIdx;
-};
-
-static int compare( const void* a, const void* b) {
-   // (c) Alex Reece; https://stackoverflow.com/questions/3893937/sorting-an-array-in-c
-   int8_t int_a = * ( (int8_t*) a );
-   int8_t int_b = * ( (int8_t*) b );
-
-   if(int_a == int_b){
-    return 0;
-   }else if(int_a < int_b){
-    return -1;
-   }else{
-    return 1;
-   };
 };

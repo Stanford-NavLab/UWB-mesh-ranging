@@ -1,3 +1,4 @@
 mesh_protocol_dwm1001-dev/SES/Output/
 mesh_protocol_dwm1001-dev/SES/MeshProtocolFull_DWM1001-DEV_nrf52832_xxaa.jlink
 *.emSession
+.vscode/
